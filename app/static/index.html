@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIFA World Cup 2026 - Venue Operations Copilot</title>
+  <style>
+    /* WCAG AA Accessible Styling - Solid High Contrast Design */
+    :root {
+      --bg-color: #121214;
+      --card-bg: #1e1e24;
+      --card-border: #2d2d34;
+      --text-main: #f3f4f6; /* High contrast light grey on dark background (Contrast > 10:1) */
+      --text-muted: #9ca3af;
+      --primary: #fbbf24; /* FIFA Gold accent (Contrast > 4.5:1 with dark gray) */
+      --primary-hover: #f59e0b;
+      --primary-text: #000000; /* High contrast black text on yellow/gold background (Contrast > 9:1) */
+      --danger: #ef4444;
+      --success: #10b981;
+      --info: #3b82f6;
+      --focus-outline: #2563eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      max-width: 1100px;
+      margin: 0 auto 2rem auto;
+      border-bottom: 2px solid var(--card-border);
+      padding-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .tagline {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      main {
+        grid-template-columns: 350px 1fr;
+      }
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+      font-weight: 700;
+      border-left: 3px solid var(--primary);
+      padding-left: 0.5rem;
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #121214;
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      color: var(--text-main);
+      font-size: 1rem;
+    }
+
+    input[type="text"]:focus, 
+    input[type="range"]:focus,
+    button:focus {
+      outline: 3px solid var(--focus-outline);
+      outline-offset: 2px;
+    }
+
+    /* Custom range slider styling */
+    .slider-container {
+      background: #121214;
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+    }
+
+    .slider-val-box {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: var(--card-border);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    button {
+      background-color: var(--primary);
+      color: var(--primary-text);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #27272a;
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      margin-bottom: 0.5rem;
+      text-align: left;
+      font-size: 0.85rem;
+      padding: 0.5rem 0.75rem;
+      font-weight: normal;
+    }
+
+    .btn-secondary:hover {
+      background-color: #3f3f46;
+    }
+
+    /* Result Panel styling */
+    .answer-box {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      border-left: 4px solid var(--primary);
+      padding: 1rem;
+      background-color: #15151b;
+      margin-bottom: 1.5rem;
+      border-radius: 0 4px 4px 0;
+      white-space: pre-line;
+    }
+
+    .answer-placeholder {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    details {
+      margin-top: 1rem;
+      background-color: #121214;
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    summary {
+      padding: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      background-color: #1a1a20;
+    }
+
+    summary:hover {
+      background-color: #272730;
+    }
+
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: monospace, monospace;
+      font-size: 0.85rem;
+      color: #a7f3d0;
+      background-color: #0b0b0d;
+    }
+
+    /* Health check indicator */
+    .health-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--success);
+    }
+
+    .dot.degraded {
+      background-color: var(--danger);
+    }
+
+    footer {
+      max-width: 1100px;
+      margin: 3rem auto 0 auto;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>FIFA World Cup 2026 - Venue Operations Copilot</h1>
+    <p class="tagline">Real-time Multi-Agent Decision Support for Stadium Safety and Logistics</p>
+  </header>
+
+  <main>
+    <!-- Left Column: Clock and Sample Queries -->
+    <section aria-labelledby="controls-heading">
+      <h2 id="controls-heading">Simulation Controls</h2>
+      
+      <div class="card">
+        <div class="form-group">
+          <label for="clock-slider">Simulated Clock Offset</label>
+          <div class="slider-container">
+            <div class="slider-val-box">
+              <span id="slider-label">Kickoff (0m)</span>
+              <span id="slider-time">18:00:00</span>
+            </div>
+            <input type="range" id="clock-slider" min="-60" max="90" value="0" step="5" aria-valuemin="-60" aria-valuemax="90" aria-valuenow="0">
+          </div>
+          <p class="tagline" style="margin-top: 0.5rem; font-size: 0.75rem;">
+            Drag the slider to move the simulation clock. Kickoff represents 18:00.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Sample Queries</h3>
+        <p class="tagline" style="margin-bottom: 1rem;">Click a question to copy it to the input field:</p>
+        <button type="button" class="btn-secondary" onclick="loadSample('Are there any crowd issues right now?')">
+          1. Are there any crowd issues right now?
+        </button>
+        <button type="button" class="btn-secondary" onclick="loadSample('Should we deploy extra staff to Gate A, and is there any delayed transit?')">
+          2. Should we deploy extra staff to Gate A?
+        </button>
+        <button type="button" class="btn-secondary" onclick="loadSample('Check sections 101 and 203 for rival fan mixing and concourse bottlenecks.')">
+          3. Check rival mixing & bottlenecks.
+        </button>
+      </div>
+
+      <div class="card">
+        <h3>Agent Health status</h3>
+        <div class="health-indicator">
+          <span class="dot" id="health-dot"></span>
+          <span id="health-text">Systems: Operational</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Operator Workspace -->
+    <section aria-labelledby="workspace-heading">
+      <h2 id="workspace-heading">Decision Workspace</h2>
+      
+      <div class="card">
+        <form id="query-form">
+          <div class="form-group">
+            <label for="operator-question">Ask the Copilot:</label>
+            <input type="text" id="operator-question" required placeholder="Type operational question here (e.g., Should we redirect transit arrivals?)" autocomplete="off">
+          </div>
+          <button type="submit" id="submit-btn">Run Decision-Support Agents</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>Recommendation</h3>
+        <div id="recommendation-output" class="answer-box answer-placeholder">
+          Submit an operational question to activate the decision support system.
+        </div>
+
+        <h3>Agent Telemetry Data</h3>
+        <p class="tagline" style="margin-bottom: 0.75rem;">View raw diagnostic outputs from each context agent:</p>
+        
+        <details>
+          <summary>Occupancy Agent Telemetry</summary>
+          <pre id="occupancy-raw">No data loaded yet.</pre>
+        </details>
+
+        <details>
+          <summary>Fan Mixing Agent Telemetry</summary>
+          <pre id="fanmix-raw">No data loaded yet.</pre>
+        </details>
+
+        <details>
+          <summary>Flow (Transit/Gate) Agent Telemetry</summary>
+          <pre id="flow-raw">No data loaded yet.</pre>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>FIFA World Cup 2026 Venue Operations Copilot — PromptWars Hackathon Submission</p>
+  </footer>
+
+  <script>
+    // Constant Kickoff time: 2026-06-15 at 18:00
+    const KICKOFF_HOUR = 18;
+
+    const clockSlider = document.getElementById('clock-slider');
+    const sliderLabel = document.getElementById('slider-label');
+    const sliderTime = document.getElementById('slider-time');
+    const queryForm = document.getElementById('query-form');
+    const operatorQuestion = document.getElementById('operator-question');
+    const submitBtn = document.getElementById('submit-btn');
+    const recommendationOutput = document.getElementById('recommendation-output');
+    
+    const occupancyRaw = document.getElementById('occupancy-raw');
+    const fanmixRaw = document.getElementById('fanmix-raw');
+    const flowRaw = document.getElementById('flow-raw');
+    const healthDot = document.getElementById('health-dot');
+    const healthText = document.getElementById('health-text');
+
+    // Update time displays on slider change
+    function updateClockDisplay(offset) {
+      const val = parseInt(offset);
+      if (val === 0) {
+        sliderLabel.textContent = "Kickoff";
+      } else if (val < 0) {
+        sliderLabel.textContent = `Kickoff ${val}m`;
+      } else {
+        sliderLabel.textContent = `Kickoff +${val}m`;
+      }
+
+      // Convert offset minutes to actual clock string (18:00 basis)
+      const baseMinutes = KICKOFF_HOUR * 60;
+      const totalMinutes = baseMinutes + val;
+      const hours = Math.floor(totalMinutes / 60);
+      const mins = Math.abs(totalMinutes % 60);
+      const timeStr = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:00`;
+      sliderTime.textContent = timeStr;
+    }
+
+    clockSlider.addEventListener('input', (e) => {
+      updateClockDisplay(e.target.value);
+    });
+
+    // Populate a sample query
+    function loadSample(text) {
+      operatorQuestion.value = text;
+      operatorQuestion.focus();
+    }
+
+    // Load agent health on startup
+    async function checkHealth() {
+      try {
+        const res = await fetch('/health');
+        if (res.ok) {
+          const data = await res.json();
+          const degradedList = [];
+          for (const [provider, status] of Object.entries(data.providers)) {
+            if (status !== 'ACTIVE') {
+              degradedList.push(`${provider} (${status})`);
+            }
+          }
+          if (degradedList.length > 0) {
+            healthDot.classList.add('degraded');
+            healthText.textContent = `Warning: Degraded agents: ${degradedList.join(', ')}`;
+          } else {
+            healthDot.classList.remove('degraded');
+            healthText.textContent = 'Systems: Operational';
+          }
+        }
+      } catch (err) {
+        console.error("Health check failed:", err);
+        healthDot.classList.add('degraded');
+        healthText.textContent = 'Backend unreachable';
+      }
+    }
+
+    // Handle Form Submission
+    queryForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const question = operatorQuestion.value.trim();
+      if (!question) return;
+
+      const simMinutes = clockSlider.value;
+
+      // Update UI state to loading
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Orchestrating agents & querying LLM...';
+      recommendationOutput.className = 'answer-box answer-placeholder';
+      recommendationOutput.textContent = 'Processing request...';
+
+      try {
+        const response = await fetch(`/query?sim_minutes=${simMinutes}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: question })
+        });
+
+        if (response.status === 429) {
+          recommendationOutput.className = 'answer-box';
+          recommendationOutput.style.borderLeftColor = 'var(--danger)';
+          recommendationOutput.textContent = "Error: Too many requests. Rate limit is 10 requests per minute.";
+          return;
+        }
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.detail || `Server error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        // Render recommendation
+        recommendationOutput.className = 'answer-box';
+        recommendationOutput.style.borderLeftColor = 'var(--primary)';
+        recommendationOutput.textContent = data.answer;
+
+        // Render raw telemetry
+        occupancyRaw.textContent = JSON.stringify(data.agent_data.occupancy_agent, null, 2);
+        fanmixRaw.textContent = JSON.stringify(data.agent_data.fan_mix_agent, null, 2);
+        flowRaw.textContent = JSON.stringify(data.agent_data.flow_agent, null, 2);
+
+        // Refresh system health
+        await checkHealth();
+
+      } catch (err) {
+        recommendationOutput.className = 'answer-box';
+        recommendationOutput.style.borderLeftColor = 'var(--danger)';
+        recommendationOutput.textContent = `An error occurred: ${err.message}`;
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Run Decision-Support Agents';
+      }
+    });
+
+    // Initialize display
+    updateClockDisplay(clockSlider.value);
+    checkHealth();
+  </script>
+</body>
+</html>

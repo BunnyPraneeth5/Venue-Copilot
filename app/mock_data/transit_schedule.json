@@ -1,0 +1,51 @@
+[
+  {
+    "gate": "Gate A",
+    "arrival_id": "T_A1",
+    "scheduled_offset": -45,
+    "actual_offset": -45,
+    "passengers": 800
+  },
+  {
+    "gate": "Gate A",
+    "arrival_id": "T_A2",
+    "scheduled_offset": -15,
+    "actual_offset": 10,
+    "passengers": 2200
+  },
+  {
+    "gate": "Gate B",
+    "arrival_id": "T_B1",
+    "scheduled_offset": -60,
+    "actual_offset": -60,
+    "passengers": 1200
+  },
+  {
+    "gate": "Gate B",
+    "arrival_id": "T_B2",
+    "scheduled_offset": -30,
+    "actual_offset": -30,
+    "passengers": 1200
+  },
+  {
+    "gate": "Gate C",
+    "arrival_id": "T_C1",
+    "scheduled_offset": -45,
+    "actual_offset": -45,
+    "passengers": 1000
+  },
+  {
+    "gate": "Gate C",
+    "arrival_id": "T_C2",
+    "scheduled_offset": -15,
+    "actual_offset": -15,
+    "passengers": 1000
+  },
+  {
+    "gate": "Gate D",
+    "arrival_id": "T_D1",
+    "scheduled_offset": -30,
+    "actual_offset": 30,
+    "passengers": 2500
+  }
+]

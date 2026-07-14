@@ -1,0 +1,50 @@
+[
+  {
+    "section": "101",
+    "capacity": 500,
+    "tickets": {
+      "USA": 260,
+      "Mexico": 240
+    }
+  },
+  {
+    "section": "102",
+    "capacity": 600,
+    "tickets": {
+      "USA": 550,
+      "Mexico": 50
+    }
+  },
+  {
+    "section": "103",
+    "capacity": 450,
+    "tickets": {
+      "USA": 430,
+      "Mexico": 20
+    }
+  },
+  {
+    "section": "201",
+    "capacity": 700,
+    "tickets": {
+      "USA": 100,
+      "Mexico": 600
+    }
+  },
+  {
+    "section": "202",
+    "capacity": 800,
+    "tickets": {
+      "USA": 50,
+      "Mexico": 750
+    }
+  },
+  {
+    "section": "203",
+    "capacity": 500,
+    "tickets": {
+      "USA": 250,
+      "Mexico": 250
+    }
+  }
+]
