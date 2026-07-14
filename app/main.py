@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI, Request, HTTPException, status
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -15,6 +16,10 @@ from app import orchestrator
 from app.provider_registry import provider_registry
 
 app = FastAPI(title="FIFA World Cup 2026 Venue Operations Copilot")
+
+@app.get("/")
+def redirect_to_static():
+    return RedirectResponse(url="/static/index.html")
 
 # Enable CORS for frontend integration
 app.add_middleware(

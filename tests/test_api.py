@@ -26,6 +26,11 @@ def test_health_endpoint():
     assert data["providers"]["fan_mix_agent"] == "ACTIVE"
     assert data["providers"]["flow_agent"] == "ACTIVE"
 
+def test_root_redirect():
+    response = client.get("/", follow_redirects=False)
+    assert response.status_code == 307
+    assert response.headers["location"] == "/static/index.html"
+
 def test_query_endpoint_success():
     payload = {"question": "Are there any current bottleneck risks?"}
     response = client.post("/query?sim_minutes=15", json=payload)
