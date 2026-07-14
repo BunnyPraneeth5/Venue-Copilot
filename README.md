@@ -1,8 +1,9 @@
 # FIFA World Cup 2026 - Venue Operations Copilot (PromptWars Challenge)
 
-A GenAI-driven decision-support assistant designed for **Venue Operations Staff** managing FIFA World Cup 2026 matches. 
+A GenAI-driven decision-support assistant designed for **Venue Operations Staff** managing FIFA World Cup 2026 matches.
 
 This copilot addresses two major, unsolved tournament safety challenges:
+
 1. **Rival Fan Section Mixing**: Preventing opposing, high-intensity fan sections from mixing beyond safe density thresholds.
 2. **Ticketed vs. Actual Seat Presence**: Identifying discrepancies between ticket scans (turnstile entries) and actual concourse/seat presence (detecting dangerous concourse bottlenecks).
 
@@ -11,7 +12,8 @@ This copilot addresses two major, unsolved tournament safety challenges:
 ## 🌟 The Core Approach & Logic
 
 ### How it differs from "Smart Stadium Dashboards"
-Traditional "smart stadium" tools are passive: they display pre-aggregated metrics on visual dashboard widgets, relying on operations staff to continuously monitor charts, look for anomalies, and guess appropriate interventions. 
+
+Traditional "smart stadium" tools are passive: they display pre-aggregated metrics on visual dashboard widgets, relying on operations staff to continuously monitor charts, look for anomalies, and guess appropriate interventions.
 
 **This Copilot is active and reasoning-driven.** It takes a natural-language query from an operator (e.g., *"Should we redirect transit arrivals?"* or *"Are there any crowd safety issues in the east concourse?"*) and reasons *ad hoc* across multiple live telemetry signals in real time. It correlates data from three specialized context agents to form a cohesive situational report and outputs a concrete, single recommended action—all within seconds.
 
@@ -37,7 +39,7 @@ graph TD
     FL -->|Telemetry| Orchestrator
     
     Orchestrator -->|Combined Data + Question| DA[Decision Agent]
-    DA -->|System Prompt + Guards| Gemini[Gemini 1.5 Flash]
+    DA -->|System Prompt + Guards| Gemini[Gemini 2.5 Flash]
     Gemini -->|Action Recommendation| DA
     DA -->|Answer| Orchestrator
     Orchestrator -->|Response JSON| API
@@ -56,16 +58,20 @@ graph TD
 ## 🚀 How to Run Locally
 
 ### Prerequisites
+
 - Python 3.11 or Python 3.12 installed.
 - A Gemini API key.
 
 ### Setup and Running
+
 1. Clone the repository and navigate to the directory:
+
    ```bash
    cd promptwars-venue-copilot
    ```
 
 2. Create a virtual environment and activate it:
+
    ```bash
    python -m venv venv
    # On Windows (PowerShell):
@@ -75,16 +81,19 @@ graph TD
    ```
 
 3. Install dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
 
 4. Create a `.env` file in the root directory and add your Gemini API Key:
+
    ```env
    GEMINI_API_KEY=your_actual_gemini_api_key_here
    ```
 
 5. Run the FastAPI server:
+
    ```bash
    python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
    ```
@@ -118,5 +127,6 @@ This app is optimized to deploy directly on free-tier platforms such as **Render
 ---
 
 ## 📝 Critical Assumptions
-- **Mock Data**: Since real-time stadium sensor feeds, turnstile gates, and transit arrival logs are not publicly accessible, all data inputs are simulated. 
+
+- **Mock Data**: Since real-time stadium sensor feeds, turnstile gates, and transit arrival logs are not publicly accessible, all data inputs are simulated.
 - **Simulated Clock**: A simulated clock is intentionally implemented rather than using the system's real datetime. This guarantees that whenever a evaluator runs the project (regardless of timezone, date, or year), the timeline aligns perfectly with the mock data offsets.
