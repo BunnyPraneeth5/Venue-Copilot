@@ -39,8 +39,8 @@ async def call_llm(prompt: str) -> str:
         
     try:
         genai.configure(api_key=api_key)
-        # Use gemini-1.5-flash as the recommended model
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        # Use gemini-2.5-flash as the recommended model
+        model = genai.GenerativeModel("gemini-2.5-flash")
         
         # Make the API call asynchronously
         response = await model.generate_content_async(prompt)
