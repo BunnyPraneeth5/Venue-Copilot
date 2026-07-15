@@ -257,16 +257,36 @@
       border-top: 1px solid var(--card-border);
       padding-top: 1.5rem;
     }
+
+    /* Skip link styling for accessibility */
+    .skip-link {
+      position: absolute;
+      top: -60px;
+      left: 10px;
+      background: var(--primary);
+      color: var(--primary-text);
+      padding: 0.5rem 1rem;
+      z-index: 1000;
+      transition: top 0.2s;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 0 0 4px 4px;
+    }
+    .skip-link:focus {
+      top: 0;
+      outline: 3px solid var(--focus-outline);
+    }
   </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <header>
     <h1>FIFA World Cup 2026 - Venue Operations Copilot</h1>
     <p class="tagline">Real-time Multi-Agent Decision Support for Stadium Safety and Logistics</p>
   </header>
 
-  <main>
+  <main id="main-content">
     <!-- Left Column: Clock and Sample Queries -->
     <section aria-labelledby="controls-heading">
       <h2 id="controls-heading">Simulation Controls</h2>

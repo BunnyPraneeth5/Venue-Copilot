@@ -6,7 +6,7 @@ from app.clock import clock
 BASE_DIR = Path(__file__).resolve().parent.parent
 MOCK_DATA_DIR = BASE_DIR / "mock_data"
 
-def load_json(filename: str):
+def load_json(filename: str) -> list[dict]:
     path = MOCK_DATA_DIR / filename
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)

@@ -14,11 +14,12 @@ load_dotenv()
 from app.clock import clock
 from app import orchestrator
 from app.provider_registry import provider_registry
+from app.config import settings
 
 app = FastAPI(title="FIFA World Cup 2026 Venue Operations Copilot")
 
 @app.get("/")
-def redirect_to_static():
+def redirect_to_static() -> RedirectResponse:
     return RedirectResponse(url="/static/index.html")
 
 # Enable CORS for frontend integration
@@ -30,32 +31,41 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Custom In-Memory Rate Limiter (Max 10 requests per minute per IP)
+# Custom In-Memory Rate Limiter (Max requests per window per IP)
 class RateLimiter:
-    def __init__(self, limit: int = 10, window: int = 60):
+    def __init__(self, limit: int = settings.RATE_LIMIT, window: int = settings.RATE_LIMIT_WINDOW) -> None:
         self.limit = limit
         self.window = window
         self.records = defaultdict(list)
 
     def is_limited(self, ip: str) -> bool:
         now = time.time()
-        # Prune logs older than the sliding window
-        self.records[ip] = [t for t in self.records[ip] if now - t < self.window]
+        # Prune logs older than the sliding window for all tracked IPs
+        for k in list(self.records.keys()):
+            self.records[k] = [t for t in self.records[k] if now - t < self.window]
+            # Delete key if it's empty and we're not about to append to it
+            if not self.records[k] and k != ip:
+                del self.records[k]
         
         if len(self.records[ip]) >= self.limit:
             return True
         self.records[ip].append(now)
         return False
 
-limiter = RateLimiter(limit=10, window=60)
+limiter = RateLimiter()
 
 class QueryRequest(BaseModel):
     question: str
 
 @app.post("/query")
-async def query(request: Request, payload: QueryRequest, sim_minutes: int = 0):
-    # Check rate limit
-    client_ip = request.client.host if request.client else "unknown"
+async def query(request: Request, payload: QueryRequest, sim_minutes: int = 0) -> dict:
+    # Check rate limit using X-Forwarded-For header if present, fallback to client host
+    forwarded_for = request.headers.get("X-Forwarded-For")
+    if forwarded_for:
+        client_ip = forwarded_for.split(",")[0].strip()
+    else:
+        client_ip = request.client.host if request.client else "unknown"
+
     if limiter.is_limited(client_ip):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
@@ -70,7 +80,7 @@ async def query(request: Request, payload: QueryRequest, sim_minutes: int = 0):
     return result
 
 @app.get("/health")
-def health():
+def health() -> dict:
     # Return health status of all context agents
     return {
         "status": "healthy",

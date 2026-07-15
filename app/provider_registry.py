@@ -6,7 +6,7 @@ class ProviderStatus(str, Enum):
     DISABLED = "DISABLED"
 
 class ProviderRegistry:
-    def __init__(self):
+    def __init__(self) -> None:
         # Default status for each agent is ACTIVE
         self._statuses = {
             "occupancy_agent": ProviderStatus.ACTIVE,
@@ -18,16 +18,16 @@ class ProviderRegistry:
         """Returns the current status of the specified provider."""
         return self._statuses.get(provider_name, ProviderStatus.ACTIVE)
 
-    def set_status(self, provider_name: str, status: ProviderStatus):
+    def set_status(self, provider_name: str, status: ProviderStatus) -> None:
         """Sets the status of the specified provider."""
         self._statuses[provider_name] = ProviderStatus(status)
 
-    def reset(self):
+    def reset(self) -> None:
         """Resets all provider statuses to ACTIVE."""
         for key in self._statuses:
             self._statuses[key] = ProviderStatus.ACTIVE
 
-    def get_all_statuses(self) -> dict:
+    def get_all_statuses(self) -> dict[str, str]:
         """Returns the dictionary containing statuses of all registered providers."""
         return {k: v.value for k, v in self._statuses.items()}
 

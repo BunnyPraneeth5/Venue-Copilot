@@ -66,3 +66,24 @@ def test_rate_limiting():
     
     # Reset state afterwards
     limiter.records.clear()
+
+def test_rate_limiting_x_forwarded_for():
+    from app.main import limiter
+    limiter.records.clear()
+    
+    payload = {"question": "Forwarded header test"}
+    headers = {"X-Forwarded-For": "203.0.113.195, 70.41.3.18"}
+    
+    # Request with X-Forwarded-For header
+    response = client.post("/query", json=payload, headers=headers)
+    assert response.status_code == 200
+    
+    # Assert that the rate limiter recorded the request under the first IP of X-Forwarded-For
+    assert "203.0.113.195" in limiter.records
+    assert len(limiter.records["203.0.113.195"]) == 1
+    # Other IP in header or host should not be in tracked records
+    assert "70.41.3.18" not in limiter.records
+    assert "testclient" not in limiter.records
+    
+    # Reset state afterwards
+    limiter.records.clear()

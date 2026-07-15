@@ -1,11 +1,13 @@
 import asyncio
 import logging
+from typing import Callable
 from app.agents import occupancy_agent, fan_mix_agent, flow_agent, decision_agent
 from app.provider_registry import provider_registry, ProviderStatus
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-async def run_agent_safely(name: str, agent_run_fn, timeout: float = 4.0) -> dict:
+async def run_agent_safely(name: str, agent_run_fn: Callable[[], dict], timeout: float = settings.AGENT_TIMEOUT) -> dict:
     """
     Runs an agent function safely with a timeout. If it fails or times out,
     marks the status as DEGRADED and returns a placeholder so the orchestrator continues.

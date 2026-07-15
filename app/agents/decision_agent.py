@@ -3,6 +3,7 @@ import json
 import logging
 import google.generativeai as genai
 from app.clock import clock
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +40,8 @@ async def call_llm(prompt: str) -> str:
         
     try:
         genai.configure(api_key=api_key)
-        # Use gemini-2.5-flash as the recommended model
-        model = genai.GenerativeModel("gemini-2.5-flash")
+        # Use settings.GEMINI_MODEL_NAME as the recommended model
+        model = genai.GenerativeModel(settings.GEMINI_MODEL_NAME)
         
         # Make the API call asynchronously
         response = await model.generate_content_async(prompt)
