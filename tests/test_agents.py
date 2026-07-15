@@ -157,7 +157,7 @@ def test_fan_mix_threshold_boundaries(monkeypatch):
         }
     }]
     
-    monkeypatch.setattr(fan_mix_agent, "load_json", lambda filename: manifest_40)
+    monkeypatch.setattr(fan_mix_agent, "SEATING_MANIFEST", manifest_40)
     data = fan_mix_agent.run()
     s = data["sections"][0]
     assert s["density_pct"] == 40.0
@@ -173,7 +173,7 @@ def test_fan_mix_threshold_boundaries(monkeypatch):
             "Mexico": 401
         }
     }]
-    monkeypatch.setattr(fan_mix_agent, "load_json", lambda filename: manifest_40_1)
+    monkeypatch.setattr(fan_mix_agent, "SEATING_MANIFEST", manifest_40_1)
     data = fan_mix_agent.run()
     s = data["sections"][0]
     assert s["density_pct"] == 40.1
@@ -191,7 +191,8 @@ def test_occupancy_threshold_boundaries(monkeypatch):
         {"section": "102", "sim_minutes_offset": 0, "count": 40}
     ]
     
-    monkeypatch.setattr(occupancy_agent, "load_json", lambda filename: manifest if filename == "seating_manifest.json" else stream_low_count)
+    monkeypatch.setattr(occupancy_agent, "SEATING_MANIFEST", manifest)
+    monkeypatch.setattr(occupancy_agent, "TURNSTILE_STREAM", stream_low_count)
     data = occupancy_agent.run()
     s = data["sections"][0]
     assert s["scanned_in"] == 90
@@ -203,7 +204,8 @@ def test_occupancy_threshold_boundaries(monkeypatch):
         {"section": "102", "sim_minutes_offset": -60, "count": 130},
         {"section": "102", "sim_minutes_offset": 0, "count": 70}
     ]
-    monkeypatch.setattr(occupancy_agent, "load_json", lambda filename: manifest if filename == "seating_manifest.json" else stream_boundary_35)
+    monkeypatch.setattr(occupancy_agent, "SEATING_MANIFEST", manifest)
+    monkeypatch.setattr(occupancy_agent, "TURNSTILE_STREAM", stream_boundary_35)
     data = occupancy_agent.run()
     s = data["sections"][0]
     assert s["scanned_in"] == 200
@@ -216,7 +218,8 @@ def test_occupancy_threshold_boundaries(monkeypatch):
         {"section": "102", "sim_minutes_offset": -60, "count": 129},
         {"section": "102", "sim_minutes_offset": 0, "count": 71}
     ]
-    monkeypatch.setattr(occupancy_agent, "load_json", lambda filename: manifest if filename == "seating_manifest.json" else stream_boundary_35_5)
+    monkeypatch.setattr(occupancy_agent, "SEATING_MANIFEST", manifest)
+    monkeypatch.setattr(occupancy_agent, "TURNSTILE_STREAM", stream_boundary_35_5)
     data = occupancy_agent.run()
     s = data["sections"][0]
     assert s["scanned_in"] == 200

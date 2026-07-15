@@ -1,15 +1,7 @@
 import os
 import json
-from pathlib import Path
 from app.config import settings
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-MOCK_DATA_DIR = BASE_DIR / "mock_data"
-
-def load_json(filename: str) -> list[dict]:
-    path = MOCK_DATA_DIR / filename
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+from app.agents.data_loader import SEATING_MANIFEST
 
 def run() -> dict:
     """
@@ -31,7 +23,7 @@ def run() -> dict:
             "exceeds_threshold": bool
         }]}
     """
-    seating_manifest = load_json("seating_manifest.json")
+    seating_manifest = SEATING_MANIFEST
     results = []
     
     for item in seating_manifest:

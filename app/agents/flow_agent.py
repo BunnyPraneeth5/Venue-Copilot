@@ -1,15 +1,7 @@
 import os
 import json
-from pathlib import Path
 from app.clock import clock
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-MOCK_DATA_DIR = BASE_DIR / "mock_data"
-
-def load_json(filename: str) -> list[dict]:
-    path = MOCK_DATA_DIR / filename
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+from app.agents.data_loader import TRANSIT_SCHEDULE
 
 def run() -> dict:
     """
@@ -18,7 +10,7 @@ def run() -> dict:
     Returns:
         {"bottlenecks": [{"gate": "...", "predicted_bottleneck_time": int, "severity": "..."}]}
     """
-    transit_schedule = load_json("transit_schedule.json")
+    transit_schedule = TRANSIT_SCHEDULE
     current_offset = clock.get_offset()
     
     bottlenecks = []
