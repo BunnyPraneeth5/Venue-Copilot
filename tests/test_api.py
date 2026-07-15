@@ -67,21 +67,39 @@ def test_rate_limiting():
     # Reset state afterwards
     limiter.records.clear()
 
-def test_rate_limiting_x_forwarded_for():
+def test_rate_limiting_x_forwarded_for(monkeypatch):
     from app.main import limiter
+    from app.config import settings
+
+    # Case A: TRUST_PROXY_HEADERS is False (default)
+    # The X-Forwarded-For header should be ignored and the fallback client host should be used
+    monkeypatch.setattr(settings, "TRUST_PROXY_HEADERS", False)
     limiter.records.clear()
     
-    payload = {"question": "Forwarded header test"}
+    payload = {"question": "Forwarded header test A"}
     headers = {"X-Forwarded-For": "203.0.113.195, 70.41.3.18"}
     
-    # Request with X-Forwarded-For header
+    response = client.post("/query", json=payload, headers=headers)
+    assert response.status_code == 200
+    
+    # "203.0.113.195" should NOT be tracked since we didn't trust proxy headers
+    assert "203.0.113.195" not in limiter.records
+    assert "testclient" in limiter.records  # client host fallback
+
+    # Case B: TRUST_PROXY_HEADERS is True
+    # The X-Forwarded-For header should be honored and the first IP in the list used
+    monkeypatch.setattr(settings, "TRUST_PROXY_HEADERS", True)
+    limiter.records.clear()
+    
+    payload = {"question": "Forwarded header test B"}
+    headers = {"X-Forwarded-For": "203.0.113.195, 70.41.3.18"}
+    
     response = client.post("/query", json=payload, headers=headers)
     assert response.status_code == 200
     
     # Assert that the rate limiter recorded the request under the first IP of X-Forwarded-For
     assert "203.0.113.195" in limiter.records
     assert len(limiter.records["203.0.113.195"]) == 1
-    # Other IP in header or host should not be in tracked records
     assert "70.41.3.18" not in limiter.records
     assert "testclient" not in limiter.records
     

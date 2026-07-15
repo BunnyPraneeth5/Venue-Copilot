@@ -2,7 +2,8 @@ import os
 import json
 from app.clock import clock
 from app.config import settings
-from app.agents.data_loader import SEATING_MANIFEST, TURNSTILE_STREAM
+import app.agents.data_loader as dl
+from app.agents.data_loader import SEATING_MANIFEST, TURNSTILE_STREAM, TURNSTILE_BY_SECTION
 
 def run() -> dict:
     """
@@ -36,19 +37,29 @@ def run() -> dict:
         ticketed = sum(item["tickets"].values())
         capacity = item["capacity"]
         
+        # Filter stream events by section using pre-indexed dict (or build dynamically if stream is monkeypatched)
+        if turnstile_stream is not dl.TURNSTILE_STREAM:
+            from collections import defaultdict
+            by_section = defaultdict(list)
+            for event in turnstile_stream:
+                by_section[event["section"]].append(event)
+            section_events = by_section.get(section, [])
+        else:
+            section_events = TURNSTILE_BY_SECTION.get(section, [])
+        
         # Calculate scanned-in count up to current time
         scanned_in = sum(
             event["count"] 
-            for event in turnstile_stream 
-            if event["section"] == section and event["sim_minutes_offset"] <= current_offset
+            for event in section_events 
+            if event["sim_minutes_offset"] <= current_offset
         )
         
         # Calculate estimated seated based on the section's concourse delay
         delay = settings.CONCOURSE_DELAYS.get(section, 10)
         estimated_seated = sum(
             event["count"]
-            for event in turnstile_stream
-            if event["section"] == section and event["sim_minutes_offset"] <= (current_offset - delay)
+            for event in section_events
+            if event["sim_minutes_offset"] <= (current_offset - delay)
         )
         
         # Ensure estimated seated is bounded by scanned_in

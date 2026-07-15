@@ -59,9 +59,12 @@ class QueryRequest(BaseModel):
 
 @app.post("/query")
 async def query(request: Request, payload: QueryRequest, sim_minutes: int = 0) -> dict:
-    # Check rate limit using X-Forwarded-For header if present, fallback to client host
+    # Check rate limit using X-Forwarded-For header only if configured to trust proxy headers.
+    # This trust boundary prevents IP spoofing in environments that are directly internet-reachable.
+    # TRUST_PROXY_HEADERS should only be enabled in deployed environments (e.g., Render) where
+    # the application sits behind a trusted reverse proxy that guarantees the integrity of proxy headers.
     forwarded_for = request.headers.get("X-Forwarded-For")
-    if forwarded_for:
+    if settings.TRUST_PROXY_HEADERS and forwarded_for:
         client_ip = forwarded_for.split(",")[0].strip()
     else:
         client_ip = request.client.host if request.client else "unknown"

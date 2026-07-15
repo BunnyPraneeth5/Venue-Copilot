@@ -4,6 +4,7 @@ class Config:
     # Rate limiting
     RATE_LIMIT: int = int(os.getenv("RATE_LIMIT", "10"))
     RATE_LIMIT_WINDOW: int = int(os.getenv("RATE_LIMIT_WINDOW", "60"))
+    TRUST_PROXY_HEADERS: bool = os.getenv("TRUST_PROXY_HEADERS", "false").lower() == "true"
 
     # Agent settings
     AGENT_TIMEOUT: float = float(os.getenv("AGENT_TIMEOUT", "4.0"))
