@@ -480,8 +480,27 @@
         }
 
         if (!response.ok) {
-          const errData = await response.json().catch(() => ({}));
-          throw new Error(errData.detail || `Server error: ${response.status}`);
+          let errMsg = 'Something went wrong, please try again';
+          try {
+            const errData = await response.json();
+            if (errData && Array.isArray(errData.detail)) {
+              const firstErr = errData.detail[0];
+              if (firstErr && firstErr.msg) {
+                if (firstErr.type === 'string_too_long' || firstErr.msg.includes('at most 500 characters')) {
+                  errMsg = 'Please shorten your question to 500 characters or fewer.';
+                } else if (firstErr.type === 'string_too_short' || firstErr.msg.includes('at least 1 characters')) {
+                  errMsg = 'Please enter a question of at least 1 character.';
+                } else {
+                  errMsg = firstErr.msg;
+                }
+              }
+            } else if (errData && typeof errData.detail === 'string') {
+              errMsg = errData.detail;
+            }
+          } catch (jsonErr) {
+            // Fallback to default generic message
+          }
+          throw new Error(errMsg);
         }
 
         const data = await response.json();
