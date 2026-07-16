@@ -105,3 +105,27 @@ def test_rate_limiting_x_forwarded_for(monkeypatch):
     
     # Reset state afterwards
     limiter.records.clear()
+
+
+def test_query_validation_empty_question():
+    payload = {"question": ""}
+    response = client.post("/query", json=payload)
+    assert response.status_code == 422
+
+
+def test_query_validation_too_long_question():
+    payload = {"question": "a" * 600}
+    response = client.post("/query", json=payload)
+    assert response.status_code == 422
+
+
+def test_cors_options_invalid_origin():
+    headers = {
+        "Origin": "https://evil.com",
+        "Access-Control-Request-Method": "POST",
+    }
+    response = client.options("/query", headers=headers)
+    allow_origin = response.headers.get("access-control-allow-origin")
+    assert allow_origin != "https://evil.com"
+    assert allow_origin != "*"
+
