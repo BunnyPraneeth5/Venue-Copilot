@@ -34,6 +34,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "style-src 'self' https://fonts.googleapis.com; "
+        "font-src https://fonts.gstatic.com"
+    )
+    return response
+
+
 # Custom In-Memory Rate Limiter (Max requests per window per IP)
 class RateLimiter:
     def __init__(self, limit: int = settings.RATE_LIMIT, window: int = settings.RATE_LIMIT_WINDOW) -> None:

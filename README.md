@@ -55,6 +55,14 @@ graph TD
 5. **Provider Registry (`app/provider_registry.py`)**: Maintains agent operational states (`ACTIVE`, `DEGRADED`, `DISABLED`). If any agent fails or times out, the orchestrator registers it as `DEGRADED` and continues utilizing the remaining agents without crashing.
 6. **Decision Agent (`app/agents/decision_agent.py`)**: Feeds gathered data and the user query to Gemini 2.5 Flash. It uses a rigorous system instruction set to act as a prompt-injection guardrail, ensuring user questions are treated purely as *data* rather than commands. Answers are restricted to under 150 words and conclude with one concrete action.
 
+## Security and CSP Compliance
+
+To ensure production-grade security, the FastAPI backend applies response security headers on every request:
+- **X-Content-Type-Options**: Set to `nosniff` to prevent MIME-sniffing.
+- **Referrer-Policy**: Set to `strict-origin-when-cross-origin` to protect referrer privacy.
+- **Content-Security-Policy (CSP)**: Restricts resource origins to secure sources (`default-src 'self'`).
+  - To comply with this strict CSP without using insecure `'unsafe-inline'` directives, the application's CSS styling is externalized from `app/static/index.html` to `app/static/styles.css`.
+
 ## How to Run Locally
 
 ### Prerequisites
@@ -128,4 +136,6 @@ This app is deployed on Render's free tier:
 ## Known Limitations
 
 - **Hosting Cold Start**: If hosted on a free-tier server, the application may take 30–60 seconds to spin up on the initial request after a period of inactivity.
-- **Non-Persistent Rate Limiting**: The sliding-window rate limiter runs entirely in-memory and will reset whenever the backend server restarts.
+- **In-Memory Rate Limiter**: The sliding-window rate limiter runs entirely in-memory and per-process, meaning it resets on restart and does not share state across multiple server worker processes.
+- **Simulated Telemetry**: The occupancy, fan-mixing, and flow data are simulated telemetry streams rather than live venue feeds, designed specifically for the purposes of this hackathon demo.
+

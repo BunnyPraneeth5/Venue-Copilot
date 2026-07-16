@@ -26,6 +26,17 @@ def test_health_endpoint():
     assert data["providers"]["fan_mix_agent"] == "ACTIVE"
     assert data["providers"]["flow_agent"] == "ACTIVE"
 
+def test_security_headers():
+    response = client.get("/health")
+    assert response.headers.get("X-Content-Type-Options") == "nosniff"
+    assert response.headers.get("Referrer-Policy") == "strict-origin-when-cross-origin"
+    assert response.headers.get("Content-Security-Policy") == (
+        "default-src 'self'; "
+        "style-src 'self' https://fonts.googleapis.com; "
+        "font-src https://fonts.gstatic.com"
+    )
+
+
 def test_root_redirect():
     response = client.get("/", follow_redirects=False)
     assert response.status_code == 307
@@ -128,4 +139,17 @@ def test_cors_options_invalid_origin():
     allow_origin = response.headers.get("access-control-allow-origin")
     assert allow_origin != "https://evil.com"
     assert allow_origin != "*"
+
+
+def test_query_validation_too_long_question_error_format():
+    payload = {"question": "a" * 600}
+    response = client.post("/query", json=payload)
+    assert response.status_code == 422
+    data = response.json()
+    assert "detail" in data
+    detail = data["detail"]
+    assert isinstance(detail, list)
+    assert len(detail) > 0
+    assert "msg" in detail[0]
+
 
