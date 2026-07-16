@@ -48,8 +48,8 @@ async def call_llm(prompt: str) -> str:
         response = await model.generate_content_async(prompt)
         return response.text.strip()
     except Exception as e:
-        logger.error(f"Failed to generate content from Gemini API: {str(e)}")
-        return f"Error calling Gemini API: {str(e)}"
+        logger.error(f"Failed to generate content from Gemini API: {str(e)}", exc_info=True)
+        return "Unable to generate a recommendation right now. Please try again."
 
 async def run(question: str, agent_data: dict) -> str:
     """

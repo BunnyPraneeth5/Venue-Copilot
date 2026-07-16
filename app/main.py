@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import time
 from collections import defaultdict
@@ -25,7 +25,10 @@ def redirect_to_static() -> RedirectResponse:
 # Enable CORS for frontend integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://venue-copilot.onrender.com",
+        "http://localhost:8000"
+    ],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -55,7 +58,7 @@ class RateLimiter:
 limiter = RateLimiter()
 
 class QueryRequest(BaseModel):
-    question: str
+    question: str = Field(..., min_length=1, max_length=500)
 
 @app.post("/query")
 async def query(request: Request, payload: QueryRequest, sim_minutes: int = 0) -> dict:
