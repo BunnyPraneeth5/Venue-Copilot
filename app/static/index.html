@@ -145,10 +145,30 @@
       updateClockDisplay(e.target.value);
     });
 
-    // Populate a sample query
+    // Format markdown text to clean HTML
+    function formatMarkdown(text) {
+      if (!text) return '';
+      const escaped = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      const formatted = escaped
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+      return `<p>${formatted}</p>`;
+    }
+
+    // Populate a sample query and submit automatically
     function loadSample(text) {
       operatorQuestion.value = text;
       operatorQuestion.focus();
+      if (typeof queryForm.requestSubmit === 'function') {
+        queryForm.requestSubmit();
+      } else {
+        queryForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+      }
     }
 
     // Load agent health on startup
@@ -236,7 +256,7 @@
         // Render recommendation
         recommendationOutput.className = 'answer-box';
         recommendationOutput.style.borderLeftColor = 'var(--primary)';
-        recommendationOutput.textContent = data.answer;
+        recommendationOutput.innerHTML = formatMarkdown(data.answer);
 
         // Render raw telemetry
         occupancyRaw.textContent = JSON.stringify(data.agent_data.occupancy_agent, null, 2);

@@ -27,7 +27,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://venue-copilot.onrender.com",
-        "http://localhost:8000"
+        "http://localhost:8000",
+        "http://127.0.0.1:8000"
     ],
     allow_credentials=False,
     allow_methods=["*"],
@@ -41,6 +42,7 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
         "style-src 'self' https://fonts.googleapis.com; "
         "font-src https://fonts.gstatic.com"
     )

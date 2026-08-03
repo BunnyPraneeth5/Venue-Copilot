@@ -32,6 +32,7 @@ def test_security_headers():
     assert response.headers.get("Referrer-Policy") == "strict-origin-when-cross-origin"
     assert response.headers.get("Content-Security-Policy") == (
         "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
         "style-src 'self' https://fonts.googleapis.com; "
         "font-src https://fonts.gstatic.com"
     )
